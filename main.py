@@ -41,16 +41,16 @@ class MyWidget(QtWidgets.QWidget):
         table_widget.setRowCount(0) 
         for row_index, value_tuple in enumerate(list_values[1:]):
             table_widget.insertRow(row_index)
-           # print(value_tuple)
             for column_index, value in enumerate(value_tuple):
                 table_widget.setItem(row_index, column_index, QTableWidgetItem(str(value)))
 
 
-    def submit(self, prompts, data_rows, mode):
-       if mode=='na podstawie url':
+    def submit(self, queries, prompts, data_rows, mode):
+       if mode=='Url':
             print('a')
-       elif mode == 'wyszukaj url':
+       elif mode == 'Find url':
            print('b')
+           print(prompts,data_rows,mode, queries)
 
 
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     widget = MyWidget()
     widget.resize(1000, 600)
-    widget.setFixedSize(1000, 600)
+    widget.setFixedSize(1200, 700)
     widget.show()
 
     sys.exit(app.exec())
