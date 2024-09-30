@@ -4,15 +4,23 @@ import openpyxl
 from PySide6.QtWidgets import QSpacerItem, QSizePolicy, QVBoxLayout, QPushButton, QFileDialog, QLineEdit, QSplitter, QListWidget, QListWidgetItem,QTextEdit, QTableWidgetItem, QHBoxLayout,QComboBox,QLabel
 
 from PySide6.QtCore import Signal
+import os
+from scrap_engine import SmartScraper
 
 class SettingsLayout(QtWidgets.QWidget):
     file_loaded = Signal(list)
     prompt_ready = Signal(list, list, list, str)
+    result_ready = Signal(list)
+    result_partial_ready = Signal(list)
 
     def __init__(self):
         super().__init__()
         self.settings_layout = QVBoxLayout(self)
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        api_key = os.getenv("OPEN_API_KEY")
+        print(f"API Key: {api_key}")
+        self.scrapper = SmartScraper(api_key)
 
         # Load File Button
         self.load_button = QPushButton('Załaduj plik')
@@ -148,9 +156,26 @@ class SettingsLayout(QtWidgets.QWidget):
                 )
                 return
         mode = self.mode_box.currentText()
-        self.prompt_ready.emit(queries, prompts, data_rows, mode)
+        self.submit(queries, prompts, data_rows, mode)
+        
         
                  
+    def submit(self, queries, prompts, data_rows, mode):
+       
+       if mode=='Url':
+            print('a')
+       elif mode == 'Find url':
+           print('b')
+           print(prompts,data_rows,mode, queries)
+           results = []
+
+           for query, prompt in  zip(queries, prompts):
+                result = self.scrapper.scrap_first_google_search(query, prompt)
+                print(result)
+                results.append(result)
+
+           self.result_ready.emit(results)
+
 
                  
                 

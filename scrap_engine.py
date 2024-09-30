@@ -11,25 +11,21 @@ class SmartScraper:
             },
         }
 
-    def scrap_first_google_search(self, prompt):
-        query = 'ala'
+    def scrap_first_google_search(self, query, prompt):
         source = [f"https://www.google.com/search?q={query.replace(' ', '+')}"]
-        prompt = (
-            "Znajdź pierwszy link do profilu LinkedIn dla osoby o następujących danych: Zwróć tylko URL."
-        )
-        
+
+        prompt = prompt + "Please provide the data as flat JSON objects without nesting under any keys or names."
+        print(prompt)
         smart_scraper_graph = SmartScraperMultiGraph(
             prompt=prompt,
             source=source,
             config=self.graph_config,
         )
         result = smart_scraper_graph.run()
+        print(result)
         return result
 
     def scrap_info_from_website(self, prompt, urls):
-        prompt = (
-            "Znajdź pierwszy link do profilu LinkedIn dla osoby o następujących danych: Zwróć tylko URL."
-        )
         
         smart_scraper_graph = SmartScraperMultiGraph(
             prompt=prompt,
@@ -40,5 +36,4 @@ class SmartScraper:
         return result
 
     def parse_results(self, results):
-        
-        pass
+         pass
