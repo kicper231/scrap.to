@@ -5,21 +5,32 @@ from PySide6.QtWidgets import QSpacerItem, QSizePolicy, QVBoxLayout, QPushButton
 
 from PySide6.QtCore import Signal
 import os
-from scrap_engine import SmartScraper
+from scraper_engine import SmartScraper
+from scraper_thread import ScraperThread
 
 class SettingsLayout(QtWidgets.QWidget):
     file_loaded = Signal(list)
     prompt_ready = Signal(list, list, list, str)
     result_ready = Signal(list)
-    result_partial_ready = Signal(list)
+    result_partial_ready = Signal(dict)
+    result_reset = Signal()
+    
 
     def __init__(self):
         super().__init__()
         self.settings_layout = QVBoxLayout(self)
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
+
         api_key = os.getenv("OPEN_API_KEY")
-        print(f"API Key: {api_key}")
+        
+        if(api_key==None):
+            file = open('apiKey.txt','r')
+            content = file.read()
+            api_key = content
+            file.close()
+
+
         self.scrapper = SmartScraper(api_key)
 
         # Load File Button
@@ -113,6 +124,7 @@ class SettingsLayout(QtWidgets.QWidget):
                 self.update_placeholder_list()
                 self.build_prompt_button.setEnabled(True)
                 self.file_loaded.emit(self.my_list)
+                
 
 
     def create_focus_in_event(self, widget):
@@ -161,22 +173,21 @@ class SettingsLayout(QtWidgets.QWidget):
         
                  
     def submit(self, queries, prompts, data_rows, mode):
+       self.result_reset.emit()
        
        if mode=='Url':
             print('a')
        elif mode == 'Find url':
-           print('b')
-           print(prompts,data_rows,mode, queries)
            results = []
 
-           for query, prompt in  zip(queries, prompts):
-                result = self.scrapper.scrap_first_google_search(query, prompt)
-                print(result)
-                results.append(result)
+           self.scraper_thread = ScraperThread(self.scrapper, queries, prompts,None, mode)
+           self.scraper_thread.result_partial_ready.connect(self.result_partial_ready)
+           self.scraper_thread.result_ready.connect(self.result_ready.emit)
+           self.scraper_thread.start()
 
-           self.result_ready.emit(results)
-
-
+    def emit_partial_result(self, result):
+        self.result_partial_ready.emit(result)
+         
                  
                 
 
