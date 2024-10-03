@@ -1,15 +1,13 @@
 import sys
 from PySide6 import QtCore, QtWidgets
 import openpyxl
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QLineEdit, QSplitter, QTableWidgetItem, QHBoxLayout
+from PySide6.QtCore import QFile, QTextStream
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QFileDialog, QLineEdit, QSplitter, QTableWidgetItem
 from preview_layout import PreviewLayout
 from settings_layout import SettingsLayout
 from result_layout import ResultLayout
-from scraper_engine import SmartScraper
-import os 
 import json
-import csv
-import io
+
 
 
 
@@ -105,6 +103,9 @@ class MyWidget(QtWidgets.QWidget):
              ['Surname', 'Name', 'Occupation'],
              ['Król', 'Kacper', 'itsquad'],
              ['Kopernik', 'Mikołaj', 'astronom'],
+             ['Konopnicka', 'Maria', 'pisarka'],
+             ['Konopnicka', 'Maria', 'pisarka'],
+             ['Konopnicka', 'Maria', 'pisarka'],
              ['Konopnicka', 'Maria', 'pisarka']
                 ]
         
@@ -126,11 +127,10 @@ class MyWidget(QtWidgets.QWidget):
         self.current_row = 1
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication([])
-
+    app = QtWidgets.QApplication(sys.argv)
     widget = MyWidget()
     # widget.resize(1000, 600)
-    # widget.setFixedSize(1200, 700)
+    
     widget.show()
 
     sys.exit(app.exec())
