@@ -42,7 +42,7 @@ class SettingsLayout(QtWidgets.QWidget):
         api_key = os.getenv("OPEN_API_KEY")
 
         if api_key == None:
-            file = open("apiKey.txt", "r")
+            file = open("src/apiKey.txt", "r")
             content = file.read()
             api_key = content
             file.close()

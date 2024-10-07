@@ -66,7 +66,7 @@ class ScraperThread(QThread):
             for i in range(len(self.prompts)):
 
                 if self.stop_flag:
-                        break
+                    break
 
                 if self.mode == Mode.FIND_URL:
                     result = self.scraper.scrap_first_google_search(
@@ -82,8 +82,6 @@ class ScraperThread(QThread):
                 results.append(result[1])
 
         self.result_ready.emit(results)
-    
-
 
     def stop(self):
         self._stop_flag = True
