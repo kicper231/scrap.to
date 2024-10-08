@@ -136,7 +136,7 @@ class SettingsLayout(QtWidgets.QWidget):
 
         self.settings_layout.addWidget(self.chatmodel_label)
         self.settings_layout.addWidget(self.chatmodel_combobox)
-        self.settings_layout.addWidget(self.test_button)
+        # self.settings_layout.addWidget(self.test_button)
 
         self.settings_layout.addItem(spacer)
         self.settings_layout.addItem(spacer)

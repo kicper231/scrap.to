@@ -1,9 +1,9 @@
 from scrapegraphai.graphs import SmartScraperGraph
 
+from config.settings import PROMPT_PREFIX, PROMPT_SUFFIX
+
 
 class SmartScraper:
-
-    sufix = " Please provide the data as flat JSON objects without nesting under any keys or names."
 
     def __init__(self, api_key, model="openai/gpt-4o-mini"):
 
@@ -17,7 +17,7 @@ class SmartScraper:
     def scrap_first_google_search(self, query, prompt, index):
         source = f"https://www.google.com/search?q={query.replace(' ', '+')}"
 
-        prompt = "Based on search results: " + prompt + self.sufix
+        prompt = PROMPT_PREFIX + prompt + PROMPT_SUFFIX
         smart_scraper_graph = SmartScraperGraph(
             prompt=prompt,
             source=source,
@@ -33,7 +33,7 @@ class SmartScraper:
         return (index, result)
 
     def scrap_info_from_website(self, url, prompt, index):
-        prompt += self.sufix
+        prompt += PROMPT_SUFFIX
         smart_scraper_graph = SmartScraperGraph(
             prompt=prompt,
             source=url,

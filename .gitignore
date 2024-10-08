@@ -9,3 +9,4 @@ main.spec
 /src/gui/__pycache__
 /src/config/__pycache__
 __pycache__/
+result.txt

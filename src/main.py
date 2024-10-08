@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from config.settings import RESULT_FILE_PATH
 from core.error_hadler import ErrorHandler
 from gui.preview_layout import PreviewLayout
 from gui.result_layout import ResultLayout
@@ -110,6 +111,10 @@ class MyWidget(QWidget):
                     )
                     row_values.append(value)
                 csv_rows.append(row_values)
+
+            result_file = open(RESULT_FILE_PATH, "w", encoding="utf-8")
+            result_file.write(self.result_layout_widget.get_text_widget().toPlainText())
+            result_file.close()
 
     def result_partial_ready(self, result):
         self.result_layout_widget.update_progress_value(self.current_row, self.max_rows)
