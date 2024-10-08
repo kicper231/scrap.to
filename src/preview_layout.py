@@ -12,7 +12,6 @@ class PreviewLayout(QWidget):
         self.Preview_layout.addWidget(self.label_table)
 
         self.table_widget = QTableWidget()
-        self.table_widget.setRowCount(20)
         self.Preview_layout.addWidget(self.table_widget)
 
     def get_table_widget(self):

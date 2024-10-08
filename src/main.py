@@ -1,3 +1,4 @@
+import ctypes
 import json
 import sys
 
@@ -10,7 +11,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from error import Error
 from preview_layout import PreviewLayout
+from prompt_test import Test
 from result_layout import ResultLayout
 from settings_layout import SettingsLayout
 
@@ -19,8 +22,17 @@ class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Scrap io")
-        self.setWindowIcon(QtGui.QIcon("assets/icon.png"))
 
+        app_icon = QtGui.QIcon()
+        app_icon.addFile("assets/icons/16x16.png", QtCore.QSize(16, 16))
+        app_icon.addFile("assets/icons/24x24.png", QtCore.QSize(24, 24))
+        app_icon.addFile("assets/icons/32x32.png", QtCore.QSize(32, 32))
+        app_icon.addFile("assets/icons/48x48.png", QtCore.QSize(48, 48))
+        app_icon.addFile("assets/icons/256x256.png", QtCore.QSize(256, 256))
+        self.setWindowIcon(app_icon)
+
+        self.error = Error()
+        self.test = Test()
         self.max_rows = 0
         self.current_row = 1
 
@@ -38,18 +50,17 @@ class MyWidget(QWidget):
         self.settings_layout_widget.result_partial_ready.connect(
             self.result_partial_ready
         )
+
         self.settings_layout_widget.result_reset.connect(self.result_reset)
         self.settings_layout_widget.test_ready.connect(self.test_action)
 
         self.splitter.addWidget(self.preview_layout_widget)
         self.splitter.addWidget(self.settings_layout_widget)
         self.splitter.addWidget(self.result_layout_widget)
-        # self.splitter.addWidget(self.test_button)
 
         self.splitter.setStretchFactor(0, 1)
         self.splitter.setStretchFactor(1, 1)
         self.splitter.setStretchFactor(2, 1)
-        # self.splitter.setStretchFactor(3, 1)
 
     def update_preview_table(self, list_values):
         self.settings_layout_widget.result_reset.emit()
@@ -108,41 +119,19 @@ class MyWidget(QWidget):
         )
         self.current_row += 1
 
-    def test_action(self):
-        data = [
-            ["Surname", "Name", "Occupation"],
-            ["Król", "Kacper", "itsquad"],
-            ["Kopernik", "Mikołaj", "astronom"],
-            ["Konopnicka", "Maria", "pisarka"],
-            ["Karol", "Jung", "Filozof"],
-            ["Juzef ", "Wybicki", "muzyk"],
-            ["Andrzej", "Duda", "prezydent"],
-        ]
-
-        self.result_layout_widget.reset_result()
-        self.update_preview_table(data)
-        self.settings_layout_widget.my_list = data
-        self.settings_layout_widget.available_fields = (
-            self.settings_layout_widget.my_list[0]
-        )
-        self.settings_layout_widget.update_placeholder_list()
-        self.settings_layout_widget.build_prompt_button.setEnabled(True)
-
-        self.settings_layout_widget.query_text_edit.setText(
-            "{Surname} {Name} {Occupation}"
-        )
-        self.settings_layout_widget.prompt_text_edit.setText(
-            "Znajdz informacje o wieku, miejscu zamieszkania, ciekawostka o tej osobie"
-        )
-        self.settings_layout_widget.build_query_prompt()
-
     def result_reset(self):
         self.result_layout_widget.reset_result()
         self.current_row = 1
 
+    def test_action(self):
+        self.test.test_action(self)
+
 
 if __name__ == "__main__":
+
     app = QApplication(sys.argv)
     widget = MyWidget()
+    myappid = "mycompany.myproduct.subproduct.version"
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     widget.show()
     sys.exit(app.exec())

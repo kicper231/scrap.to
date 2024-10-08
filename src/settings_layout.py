@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 )
 
 from enums import ChatModel, Mode
+from error import Error
 from scraper_engine import SmartScraper
 from scraper_thread import ScraperThread
 
@@ -33,12 +34,13 @@ class SettingsLayout(QtWidgets.QWidget):
     is_scrapping = False
     is_parrarel = False
     chat_model = ChatModel.GTP4oMini
+    # errors = Error()
 
     def __init__(self):
         super().__init__()
         self.settings_layout = QVBoxLayout(self)
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
+        self.error = Error()
         api_key = os.getenv("OPEN_API_KEY")
 
         if api_key == None:
@@ -64,7 +66,7 @@ class SettingsLayout(QtWidgets.QWidget):
         delimiterbox_layout.addWidget(delimiter_label)
         delimiterbox_layout.addWidget(self.delimiterBox)
 
-        # File Load Buttons Layout
+        # File load buttons
         self.file_load_buttons_layout = QHBoxLayout()
         self.file_load_buttons_layout.addWidget(self.load_button)
         self.file_load_buttons_layout.addLayout(delimiterbox_layout)
@@ -72,7 +74,7 @@ class SettingsLayout(QtWidgets.QWidget):
 
         self.mode_label = QLabel("Wybierz tryb:")
         self.mode_box = QComboBox()
-        self.mode_box.addItems(["Find url", "Url", "to do"])
+        self.mode_box.addItems(["Find url", "Url"])
         self.mode_box.currentTextChanged.connect(self.change_mode)
 
         self.query_label = QLabel("Wprowadz query:")
@@ -133,13 +135,12 @@ class SettingsLayout(QtWidgets.QWidget):
 
         self.settings_layout.addWidget(self.chatmodel_label)
         self.settings_layout.addWidget(self.chatmodel_combobox)
-
         self.settings_layout.addWidget(self.test_button)
 
         self.settings_layout.addItem(spacer)
         self.settings_layout.addItem(spacer)
         self.settings_layout.addItem(spacer)
-        self.settings_layout.addWidget(self.build_prompt_button)
+        # self.settings_layout.addWidget(self.build_prompt_button)
 
         self.settings_layout.addStretch(1)
 
@@ -263,6 +264,9 @@ class SettingsLayout(QtWidgets.QWidget):
                 self.is_parrarel,
                 self.chat_model.value,
             )
+
+            self.error = Error()
+            self.scraper_thread.exception_occour.connect(self.show_exception_dialog)
             self.scraper_thread.result_partial_ready.connect(self.result_partial_ready)
             self.scraper_thread.result_ready.connect(self.result_ready.emit)
             self.scraper_thread.start()
@@ -280,3 +284,7 @@ class SettingsLayout(QtWidgets.QWidget):
 
     def parrarel_toggle(self):
         self.is_parrarel = not self.is_parrarel
+
+    def show_exception_dialog(self, message):
+        print(message)
+        self.error.show_error_message(message)

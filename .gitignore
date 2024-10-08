@@ -4,5 +4,4 @@ apiKey.txt
 /build
 /dist
 main.spec
-/src __pycache__
-
+/src/__pycache__
