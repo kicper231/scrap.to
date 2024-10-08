@@ -5,3 +5,7 @@ apiKey.txt
 /dist
 main.spec
 /src/__pycache__
+/src/core/__pycache__
+/src/gui/__pycache__
+/src/config/__pycache__
+__pycache__/

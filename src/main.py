@@ -11,11 +11,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from error import Error
-from preview_layout import PreviewLayout
-from prompt_test import Test
-from result_layout import ResultLayout
-from settings_layout import SettingsLayout
+from core.error_hadler import ErrorHandler
+from gui.preview_layout import PreviewLayout
+from gui.result_layout import ResultLayout
+from gui.settings_layout import SettingsLayout
+from scrapper.prompt_test import Test
 
 
 class MyWidget(QWidget):
@@ -31,7 +31,7 @@ class MyWidget(QWidget):
         app_icon.addFile("assets/icons/256x256.png", QtCore.QSize(256, 256))
         self.setWindowIcon(app_icon)
 
-        self.error = Error()
+        self.error = ErrorHandler()
         self.test = Test()
         self.max_rows = 0
         self.current_row = 1

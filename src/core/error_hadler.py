@@ -1,11 +1,12 @@
+import logging
+
 from PySide6.QtWidgets import QMessageBox, QWidget
 
 
-class Error(QWidget):
+class ErrorHandler(QWidget):
 
     def show_error_message(self, message):
-
-        print(message)
+        logging.error(message)
         button = QMessageBox.critical(
             self,
             "Error!",

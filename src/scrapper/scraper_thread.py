@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from PySide6.QtCore import QThread, Signal
 
-from enums import Mode
+from core.enums import Mode
 
 
 class ScraperThread(QThread):

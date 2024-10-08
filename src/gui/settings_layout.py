@@ -1,12 +1,10 @@
 import os
 
-import openpyxl
 from PySide6 import QtWidgets
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
-    QFileDialog,
     QHBoxLayout,
     QLabel,
     QListWidget,
@@ -18,10 +16,12 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from enums import ChatModel, Mode
-from error import Error
-from scraper_engine import SmartScraper
-from scraper_thread import ScraperThread
+from config.settings import API_KEY_PATH, SUPPORTED_SCRAPER_MODELS
+from core.enums import ChatModel, Mode
+from core.error_hadler import ErrorHandler
+from core.file_loader import FileLoader
+from scrapper.scraper_engine import SmartScraper
+from scrapper.scraper_thread import ScraperThread
 
 
 class SettingsLayout(QtWidgets.QWidget):
@@ -31,6 +31,7 @@ class SettingsLayout(QtWidgets.QWidget):
     result_partial_ready = Signal(dict)
     result_reset = Signal()
     test_ready = Signal()
+
     is_scrapping = False
     is_parrarel = False
     chat_model = ChatModel.GTP4oMini
@@ -40,11 +41,11 @@ class SettingsLayout(QtWidgets.QWidget):
         super().__init__()
         self.settings_layout = QVBoxLayout(self)
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self.error = Error()
+        self.error = ErrorHandler()
         api_key = os.getenv("OPEN_API_KEY")
 
         if api_key == None:
-            file = open("src/apiKey.txt", "r")
+            file = open(API_KEY_PATH, "r")
             content = file.read()
             api_key = content
             file.close()
@@ -108,7 +109,7 @@ class SettingsLayout(QtWidgets.QWidget):
         self.parrarel_checkbox.toggled.connect(self.parrarel_toggle)
         self.chatmodel_combobox = QComboBox()
         self.chatmodel_label = QLabel("Model czata")
-        self.chatmodel_combobox.addItems(["gpt-4o-mini", "gpt-4o", "gtp-3.5-turbo"])
+        self.chatmodel_combobox.addItems(SUPPORTED_SCRAPER_MODELS)
 
         self.build_prompt_button = QPushButton("Generuj")
         self.build_prompt_button.clicked.connect(self.build_query_prompt)
@@ -140,44 +141,23 @@ class SettingsLayout(QtWidgets.QWidget):
         self.settings_layout.addItem(spacer)
         self.settings_layout.addItem(spacer)
         self.settings_layout.addItem(spacer)
-        # self.settings_layout.addWidget(self.build_prompt_button)
+        self.settings_layout.addWidget(self.build_prompt_button)
 
         self.settings_layout.addStretch(1)
 
+        self.file_loader = FileLoader(self.delimiterBox)
         self.my_list = []
         self.available_fields = []
 
     def load_file(self):
-        options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getOpenFileName(
-            self,
-            "Wybierz plik",
-            "",
-            "Pliki tekstowe (*.txt);;Pliki Excel (*.xlsx);;Wszystkie pliki (*)",
-            options=options,
-        )
-        if file_path:
-            if file_path.endswith(".xlsx"):
-                workbook = openpyxl.load_workbook(file_path)
-                sheet = workbook.active
-                list_values = list(sheet.values)
-                self.my_list = [list(row) for row in list_values]
-            elif file_path.endswith(".txt"):
-                with open(file_path, mode="r", encoding="utf-8-sig") as file:
-                    lines = file.readlines()
-                self.my_list = [
-                    [
-                        i.strip()
-                        for i in line.strip().split(self.delimiterBox.currentText())
-                    ]
-                    for line in lines
-                ]
 
-            if self.my_list:
-                self.available_fields = self.my_list[0]
-                self.update_placeholder_list()
-                self.build_prompt_button.setEnabled(True)
-                self.file_loaded.emit(self.my_list)
+        self.my_list = self.file_loader.load_file()
+
+        if self.my_list:
+            self.available_fields = self.my_list[0]
+            self.update_placeholder_list()
+            self.build_prompt_button.setEnabled(True)
+            self.file_loaded.emit(self.my_list)
 
     def create_focus_in_event(self, widget):
         def focus_in_event(event):
@@ -265,7 +245,7 @@ class SettingsLayout(QtWidgets.QWidget):
                 self.chat_model.value,
             )
 
-            self.error = Error()
+            self.error = ErrorHandler()
             self.scraper_thread.exception_occour.connect(self.show_exception_dialog)
             self.scraper_thread.result_partial_ready.connect(self.result_partial_ready)
             self.scraper_thread.result_ready.connect(self.result_ready.emit)
