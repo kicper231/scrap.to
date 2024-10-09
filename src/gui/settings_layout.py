@@ -42,21 +42,19 @@ class SettingsLayout(QtWidgets.QWidget):
         self.settings_layout = QVBoxLayout(self)
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.error = ErrorHandler()
-        api_key = os.getenv("OPEN_API_KEY")
 
-        if api_key == None:
-            file = open(API_KEY_PATH, "r")
-            content = file.read()
-            api_key = content
-            file.close()
+        file = open(API_KEY_PATH, "r")
+        content = file.read()
+        api_key = content
+        file.close()
 
         self.scrapper = SmartScraper(api_key)
-
+       
         self.load_button = QPushButton("Załaduj plik")
         self.load_button.setFixedSize(100, 50)
         self.load_button.clicked.connect(self.load_file)
 
-        self.test_button = QPushButton()
+        self.test_button = QPushButton("Przykładowy test")
         self.test_button.clicked.connect(self.emit_test)
 
         # Delimiter Selection
@@ -108,7 +106,7 @@ class SettingsLayout(QtWidgets.QWidget):
         self.parrarel_checkbox = QCheckBox("Równoległe wykonanie")
         self.parrarel_checkbox.toggled.connect(self.parrarel_toggle)
         self.chatmodel_combobox = QComboBox()
-        self.chatmodel_label = QLabel("Model czata")
+        self.chatmodel_label = QLabel("Model czatu")
         self.chatmodel_combobox.addItems(SUPPORTED_SCRAPER_MODELS)
 
         self.build_prompt_button = QPushButton("Generuj")
@@ -136,7 +134,7 @@ class SettingsLayout(QtWidgets.QWidget):
 
         self.settings_layout.addWidget(self.chatmodel_label)
         self.settings_layout.addWidget(self.chatmodel_combobox)
-        # self.settings_layout.addWidget(self.test_button)
+        self.settings_layout.addWidget(self.test_button)
 
         self.settings_layout.addItem(spacer)
         self.settings_layout.addItem(spacer)
@@ -146,6 +144,7 @@ class SettingsLayout(QtWidgets.QWidget):
         self.settings_layout.addStretch(1)
 
         self.file_loader = FileLoader(self.delimiterBox)
+        self.last_focused_widget = self.prompt_text_edit
         self.my_list = []
         self.available_fields = []
 

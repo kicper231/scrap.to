@@ -10,3 +10,4 @@ main.spec
 /src/config/__pycache__
 __pycache__/
 result.txt
+/.venv
