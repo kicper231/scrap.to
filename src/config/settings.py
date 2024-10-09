@@ -3,7 +3,7 @@ import os
 # Path to apiKey and result file
 API_KEY_PATH = os.path.join(os.path.dirname(__file__), "apiKey.txt")
 RESULT_FILE_PATH = "result.txt"
- 
+
 
 # Scraper settings
 DEFAULT_SCRAPER_MODEL = "openai/gpt-4o-mini"

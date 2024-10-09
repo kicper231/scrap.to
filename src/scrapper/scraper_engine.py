@@ -37,7 +37,12 @@ class SmartScraper:
         smart_scraper_graph = SmartScraperGraph(
             prompt=prompt,
             source=url,
-            config=self.graph_config,
+            config={
+                "llm": {
+                    "api_key": self.api_key,
+                    "model": "openai/" + self.model,
+                },
+            },
         )
         result = smart_scraper_graph.run()
 
